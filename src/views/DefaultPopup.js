@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Animated, View, Text, Image, Dimensions, Platform, StatusBar, StyleSheet, PanResponder, TouchableWithoutFeedback } from 'react-native';
 
 import { isIphoneX } from '../utils';
 
-const { width: deviceWidth } = Dimensions.get('window');
+const { width: deviceWidth, height: deviceHeight } = Dimensions.get('window');
 
 const CONTAINER_MARGIN_TOP = (
   Platform.OS === 'ios'
@@ -42,10 +41,9 @@ const getAnimatedContainerStyle = ({containerSlideOffsetY, containerDragOffsetY,
 export default class DefaultPopup extends Component {
 
   static propTypes = {
-    renderPopupContent: PropTypes.func,
-    shouldChildHandleResponderStart: PropTypes.bool,
-    shouldChildHandleResponderMove: PropTypes.bool,
-  }
+    // TODO: customizable props
+    // show: PropTypes.bool,
+  };
 
   constructor(props) {
     super(props);
@@ -72,13 +70,12 @@ export default class DefaultPopup extends Component {
       timeText: null,
       title: null,
       body: null,
-      slideOutTime: null,
     };
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (e, gestureState) => true,
-      onStartShouldSetPanResponderCapture: (e, gestureState) => props.shouldChildHandleResponderStart ? false : true,  // Capture child event
+      // onStartShouldSetPanResponderCapture: (e, gestureState) => false,
       onMoveShouldSetPanResponder: (e, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (e, gestureState) => props.shouldChildHandleResponderMove ? false : true,  // Capture child event
+      // onMoveShouldSetPanResponderCapture: (e, gestureState) => false,
       onPanResponderGrant: this._onPanResponderGrant,
       onPanResponderMove: this._onPanResponderMove,
       onPanResponderRelease: this._onPanResponderRelease,
@@ -120,55 +117,18 @@ export default class DefaultPopup extends Component {
     } else {
       // 2. If not leaving screen -> slide back to original position
       this.clearTimerIfExist();
-      Animated.timing(containerDragOffsetY, { toValue: 0, duration: 200, useNativeDriver: false })
+      Animated.timing(containerDragOffsetY, { toValue: 0, duration: 200 })
         .start(({finished}) => {
           // Reset a new countdown
           this.countdownToSlideOut();
         });
     }
   }
-  
-  renderPopupContent = () => {
-    const { appIconSource, appTitle, timeText, title, body } = this.state;
-    const { renderPopupContent } = this.props;
-    if (renderPopupContent) {
-      return renderPopupContent({ appIconSource, appTitle, timeText, title, body });
-    }
-
-    return (
-      <View style={styles.popupContentContainer}>
-        <View style={styles.popupHeaderContainer}>
-          <View style={styles.headerIconContainer}>
-            <Image style={styles.headerIcon} source={appIconSource || null} />
-          </View>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerText} numberOfLines={1}>
-              {appTitle || ''}
-            </Text>
-          </View>
-          <View style={styles.headerTimeContainer}>
-            <Text style={styles.headerTime} numberOfLines={1}>
-              {timeText || ''}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.contentContainer}>
-          <View style={styles.contentTitleContainer}>
-            <Text style={styles.contentTitle}>{title || ''}</Text>
-          </View>
-          <View style={styles.contentTextContainer}>
-            <Text style={styles.contentText}>{body || ''}</Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
 
   render() {
     const {
-      show,
-      containerSlideOffsetY, containerDragOffsetY, containerScale,
-      onPressAndSlideOut,
+      show, containerSlideOffsetY, containerDragOffsetY, containerScale,
+      onPressAndSlideOut, appIconSource, appTitle, timeText, title, body
     } = this.state;
 
     if (!show) {
@@ -181,7 +141,25 @@ export default class DefaultPopup extends Component {
         {...this._panResponder.panHandlers}>
         <TouchableWithoutFeedback onPress={onPressAndSlideOut}>
           <View>
-            {this.renderPopupContent()}
+            <View style={styles.popupHeaderContainer}>
+              <View style={styles.headerIconContainer}>
+                <Image style={styles.headerIcon} source={appIconSource || null} />
+              </View>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.headerText} numberOfLines={1}>{appTitle || ''}</Text>
+              </View>
+              <View style={styles.headerTimeContainer}>
+                <Text style={styles.headerTime} numberOfLines={1}>{timeText || ''}</Text>
+              </View>
+            </View>
+            <View style={styles.contentContainer}>
+              <View style={styles.contentTitleContainer}>
+                <Text style={styles.contentTitle}>{title || ''}</Text>
+              </View>
+              <View style={styles.contentTextContainer}>
+                <Text style={styles.contentText}>{body || ''}</Text>
+              </View>
+            </View>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>
@@ -192,7 +170,7 @@ export default class DefaultPopup extends Component {
     // console.log('PressIn!');  // DEBUG
     // Show feedback as soon as user press down
     const { containerScale } = this.state;
-    Animated.spring(containerScale, { toValue: 0.95, friction: 8, useNativeDriver: false })
+    Animated.spring(containerScale, { toValue: 0.95, friction: 8 })
       .start();
   }
 
@@ -200,7 +178,7 @@ export default class DefaultPopup extends Component {
     // console.log('PressOut!');  // DEBUG
     // Show feedback as soon as user press down
     const { containerScale } = this.state;
-    Animated.spring(containerScale, { toValue: 1, friction: 8, useNativeDriver: false })
+    Animated.spring(containerScale, { toValue: 1, friction: 8 })
       .start();
   }
 
@@ -222,7 +200,7 @@ export default class DefaultPopup extends Component {
   slideIn = (duration) => {
     // Animate "this.state.containerSlideOffsetY"
     const { containerSlideOffsetY } = this.state;  // Using the new one is fine
-    Animated.timing(containerSlideOffsetY, { toValue: 1, duration: duration || 400, useNativeDriver: false })  // TODO: customize
+    Animated.timing(containerSlideOffsetY, { toValue: 1, duration: duration || 400, })  // TODO: customize
       .start(({finished}) => {
         this.countdownToSlideOut();
       });
@@ -231,7 +209,7 @@ export default class DefaultPopup extends Component {
   countdownToSlideOut = () => {
     const slideOutTimer = setTimeout(() => {
       this.slideOutAndDismiss();
-    }, this.state.slideOutTime);
+    }, 4000);  // TODO: customize
     this.setState({ slideOutTimer });
   }
 
@@ -239,7 +217,7 @@ export default class DefaultPopup extends Component {
     const { containerSlideOffsetY } = this.state;
 
     // Reset animation to 0 && show it && animate
-    Animated.timing(containerSlideOffsetY, { toValue: 0, duration: duration || 400, useNativeDriver: false })  // TODO: customize
+    Animated.timing(containerSlideOffsetY, { toValue: 0, duration: duration || 400, })  // TODO: customize
       .start(({finished}) => {
         // Reset everything and hide the popup
         this.setState({ show: false });
@@ -252,15 +230,7 @@ export default class DefaultPopup extends Component {
 
     // Put message configs into state && show popup
     const _messageConfig = messageConfig || {};
-    const {
-      onPress: onPressCallback,
-      appIconSource,
-      appTitle,
-      timeText,
-      title,
-      body,
-      slideOutTime
-    } = _messageConfig;
+    const { onPress: onPressCallback, appIconSource, appTitle, timeText, title, body } = _messageConfig;
     const onPressAndSlideOut = this.createOnPressWithCallback(onPressCallback);
     this.setState({
       show: true,
@@ -268,13 +238,7 @@ export default class DefaultPopup extends Component {
       slideOutTimer: null,
       containerDragOffsetY: new Animated.Value(0),
       containerScale: new Animated.Value(1),
-      onPressAndSlideOut,
-      appIconSource,
-      appTitle,
-      timeText,
-      title,
-      body,
-      slideOutTime: typeof slideOutTime !== 'number' ? 4000 : slideOutTime
+      onPressAndSlideOut, appIconSource, appTitle, timeText, title, body
     }, this.slideIn);
   }
 }
@@ -282,16 +246,15 @@ export default class DefaultPopup extends Component {
 const styles = StyleSheet.create({
   popupContainer: {
     position: 'absolute',
+    minHeight: 86,
     width: deviceWidth - (HORIZONTAL_MARGIN * 2),
     left: HORIZONTAL_MARGIN,
     right: HORIZONTAL_MARGIN,
     top: CONTAINER_MARGIN_TOP,
-  },
-
-  popupContentContainer: {
     backgroundColor: 'white',  // TEMP
     borderRadius: 12,
-    minHeight: 86,
+    zIndex: 1000,
+
     // === Shadows ===
     // Android
     elevation: 2,
@@ -304,7 +267,6 @@ const styles = StyleSheet.create({
       width: 0,
     },
   },
-
   popupHeaderContainer: {
     height: 32,
     backgroundColor: '#F1F1F1',  // TEMP

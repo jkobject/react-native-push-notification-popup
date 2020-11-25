@@ -1,10 +1,9 @@
 # React Native Push Notification Popup
 
-![npm version](https://img.shields.io/npm/v/react-native-push-notification-popup)
-![npm downloads](https://img.shields.io/npm/dm/react-native-push-notification-popup)
-![npm license](https://img.shields.io/npm/l/react-native-push-notification-popup)
-![maintained](https://img.shields.io/badge/Maintained%3F-yes-success)
-![ask me](https://img.shields.io/badge/Ask%20me-anything-27b092)
+[![npm version](https://badge.fury.io/js/react-native-push-notification-popup.svg)](https://badge.fury.io/js/react-native-push-notification-popup)
+[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)
 
 ![iOS Preview](https://github.com/carsonwah/_file_hosting/blob/master/react-native-push-notification-popup/ios-example.gif?raw=true) ![Android Preview](https://github.com/carsonwah/_file_hosting/blob/master/react-native-push-notification-popup/android-example.gif?raw=true)
 
@@ -30,10 +29,7 @@ This package is here to help. Just show your own notification popup to your user
 ## Installation
 
 ```bash
-# yarn, recommended
-yarn add react-native-push-notification-popup
-
-# or npm
+yarn add react-native-push-notification-popup  # recommended
 npm install react-native-push-notification-popup --save
 ```
 
@@ -44,47 +40,14 @@ npm install react-native-push-notification-popup --save
 Put it in a wrapper component. (Maybe where you handle your incoming push notifications)
 
 ```javascript
-import NotificationPopup from 'react-native-push-notification-popup';
-
-class MyComponent extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <MaybeYourNavigator />
         <NotificationPopup ref={ref => this.popup = ref} />
+        <MaybeYourNavigator />
       </View>
     );
   }
-// ...
-```
-
-> **IMPORTANT**: Remember to put it on the **bottom of other components**, because React render from back to front in order of declaration. We do not use `zIndex` becuase it is [problematic on Android](https://github.com/carsonwah/react-native-push-notification-popup/issues/21).
-
-#### Optional: Customize your popup
-
-```javascript
-// Render function
-const renderCustomPopup = ({ appIconSource, appTitle, timeText, title, body }) => (
-  <View>
-    <Text>{title}</Text>
-    <Text>{body}</Text>
-    <Button title='My button' onPress={() => console.log('Popup button onPress!')} />
-  </View>
-);
-
-class MyComponent extends React.Component {
-  render() {
-      return (
-        <View style={styles.container}>
-          <NotificationPopup
-            ref={ref => this.popup = ref}
-            renderPopupContent={renderCustomPopup}
-            shouldChildHandleResponderStart={true}
-            shouldChildHandleResponderMove={true} />
-        </View>
-      );
-    }
-// ...
 ```
 
 ### Show it!
@@ -98,18 +61,13 @@ componentDidMount() {
     timeText: 'Now',
     title: 'Hello World',
     body: 'This is a sample message.\nTesting emoji 😀',
-    slideOutTime: 5000
   });
 }
 ```
 
 ### Props
 
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| **`renderPopupContent`** | function <br /> `(options?: { appIconSource?: ImageSourcePropType; appTitle?: string; timeText?: string; title?: string;body?: string; }) => React.ReactElement<any>` | null | Render your own custom popup body (Optional) |
-| **`shouldChildHandleResponderStart`** | boolean | false | By default, parent popup will prevent bubbling event to child. This should be set to true if you have button inside your custom popup that wants to receive the event. |
-| **`shouldChildHandleResponderMove`** | boolean | false | By default, parent popup will prevent bubbling event to child. This should be set to true if you have button inside your custom popup that wants to receive the event. |
+*(Customizing options coming soon)*
 
 ### Methods
 
@@ -123,38 +81,17 @@ componentDidMount() {
 | **`timeText`** | String | '' | Text on the upper right |
 | **`title`** | String | '' | Message title |
 | **`body`** | String | '' | Message body (support multi-line) |
-| **`slideOutTime`** | Number | 4000 | Time until notification slides out |
 
 
 ## Roadmap
 
-- [ ] Add testing
-- [ ] Add example/ project
-- [ ] Support showing it globally
 - [ ] Customizing props: speed, duration, etc
 - [ ] Support image on the right-side
 - [ ] Android material design style
 - [ ] Other types of popup, e.g. without app icon
 - [ ] More usage examples
+- [ ] Transparent Background
 - [ ] Identify peerDependencies on react-native
-
-## Contributing
-
-### Debugging
-
-1. Clone this repo
-2. Run `yarn --production`
-   1. *(Installing dependencies without --production will include devDependencies (e.g. react-native), which causes crashes)*
-3. Create a react-native project next to it
-4. Add dependency to package.json
-   1. `"react-native-push-notification-popup": "file:../react-native-push-notification-popup"`
-5. Try it
-6. Re-run `yarn --production` whenever there is any code change
-
-### Linting
-
-1. Run `yarn` (Install devDependencies)
-2. Run `yarn run lint`
 
 ## License
 
